@@ -1,0 +1,94 @@
+version: '3.8'
+services:
+  rabbit1:
+    image: rabbitmq:3.11-management
+    hostname: rabbit1
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+      # Shared Erlang cookie for authentication
+      RABBITMQ_ERLANG_COOKIE: 'MY_SECRET_COOKIE'
+      # Point RabbitMQ to our custom config file
+      RABBITMQ_CONFIG_FILE: '/etc/rabbitmq/rabbitmq.conf'
+    volumes:
+      # Mount the config from the rabbitmq/ directory
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    ports:
+      - '5673:5672'   # AMQP
+      - '15673:15672' # HTTP management UI
+      - '15693:15692' # Prometheus metrics
+    networks:
+      - rabbitmq_net
+
+  rabbit2:
+    image: rabbitmq:3.11-management
+    hostname: rabbit2
+    depends_on:
+      - rabbit1
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+      RABBITMQ_ERLANG_COOKIE: 'MY_SECRET_COOKIE'
+      RABBITMQ_CONFIG_FILE: '/etc/rabbitmq/rabbitmq.conf'
+    volumes:
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    networks:
+      - rabbitmq_net
+
+  rabbit3:
+    image: rabbitmq:3.11-management
+    hostname: rabbit3
+    depends_on:
+      - rabbit1
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+      RABBITMQ_ERLANG_COOKIE: 'MY_SECRET_COOKIE'
+      RABBITMQ_CONFIG_FILE: '/etc/rabbitmq/rabbitmq.conf'
+    volumes:
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    networks:
+      - rabbitmq_net
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    depends_on:
+      - rabbit1
+      - rabbit2
+      - rabbit3
+    ports:
+      - "9091:9090"
+    volumes:
+      - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+    networks:
+      - default
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      - prometheus
+    ports:
+      - '3001:3000'
+    environment:
+        GF_SECURITY_ADMIN_USER: admin
+        GF_SECURITY_ADMIN_PASSWORD: admin
+        GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      # Persist Grafana’s database, plugins, and dashboards
+      - grafana-data:/var/lib/grafana
+      # Auto-provision Prometheus as a data source
+      - ./provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      # Auto-provision custom dashboards
+      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      # Store any JSON dashboard files for manual import
+      - ./dashboards:/var/lib/grafana/dashboards:ro
+    restart: unless-stopped
+
+volumes:
+  grafana-data:
+
+networks:
+  rabbitmq_net:
+    driver: bridge
