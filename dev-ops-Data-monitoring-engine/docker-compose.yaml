@@ -18,7 +18,7 @@ services:
       - '15673:15672' # HTTP management UI
       - '15693:15692' # Prometheus metrics
     networks:
-      - rabbitmq_net
+      - monitoring_net
 
   rabbit2:
     image: rabbitmq:3.11-management
@@ -33,7 +33,7 @@ services:
     volumes:
       - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     networks:
-      - rabbitmq_net
+      - monitoring_net
 
   rabbit3:
     image: rabbitmq:3.11-management
@@ -48,7 +48,7 @@ services:
     volumes:
       - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     networks:
-      - rabbitmq_net
+      - monitoring_net
 
 #  haproxy:
 #    image: haproxy:2.4
@@ -66,49 +66,53 @@ services:
     volumes:
       - ./nodered-flows:/data
     networks:
-      - rabbitmq_net
+      - monitoring_net
     depends_on:
       - rabbit1
 
-#  prometheus:
-#    image: prom/prometheus:latest
-#    container_name: prometheus
-#    depends_on:
-#      - rabbit1
-#      - rabbit2
-#      - rabbit3
-#    ports:
-#      - "9091:9090"
-#    volumes:
-#      - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
-#    networks:
-#      - default
-#
-#  grafana:
-#    image: grafana/grafana:latest
-#    container_name: grafana
-#    depends_on:
-#      - prometheus
-#    ports:
-#      - '3001:3000'
-#    environment:
-#        GF_SECURITY_ADMIN_USER: admin
-#        GF_SECURITY_ADMIN_PASSWORD: admin
-#        GF_USERS_ALLOW_SIGN_UP: false
-#    volumes:
-#      # Persist Grafana’s database, plugins, and dashboards
-#      - grafana-data:/var/lib/grafana
-#      # Auto-provision Prometheus as a data source
-#      - ./provisioning/datasources:/etc/grafana/provisioning/datasources:ro
-#      # Auto-provision custom dashboards
-#      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
-#      # Store any JSON dashboard files for manual import
-#      - ./dashboards:/var/lib/grafana/dashboards:ro
-#    restart: unless-stopped
-#
-#volumes:
-#  grafana-data:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    depends_on:
+      - rabbit1
+      - rabbit2
+      - rabbit3
+    ports:
+      - "9091:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - "./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml"
+    networks:
+      - monitoring_net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    depends_on:
+      - prometheus
+    ports:
+      - '3001:3000'
+    environment:
+        GF_SECURITY_ADMIN_USER: admin
+        GF_SECURITY_ADMIN_PASSWORD: admin
+        GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      # Persist Grafana’s database, plugins, and dashboards
+      - grafana-data:/var/lib/grafana
+      # Auto-provision Prometheus as a data source
+      - ./provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      # Auto-provision custom dashboards
+      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      # Store any JSON dashboard files for manual import
+      - ./dashboards:/var/lib/grafana/dashboards:ro
+    restart: unless-stopped
+    networks:
+      - monitoring_net
+
+volumes:
+  grafana-data:
 
 networks:
-  rabbitmq_net:
+  monitoring_net:
     driver: bridge

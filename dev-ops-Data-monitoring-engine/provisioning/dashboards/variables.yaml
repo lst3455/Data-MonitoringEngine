@@ -1,0 +1,9 @@
+apiVersion: 1
+list:
+  - name: patients
+    type: query
+    label: Patient
+    dataSource: Prometheus
+    query: label_values(patient_heart_rate_bpm, patient)
+    includeAll: true
+    allValue: '.*'

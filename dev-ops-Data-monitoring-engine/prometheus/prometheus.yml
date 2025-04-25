@@ -1,8 +1,13 @@
 global:
-  scrape_interval: 5s
+  scrape_interval: 5s     # How often to scrape all targets by default
 
 scrape_configs:
   - job_name: 'rabbitmq'
     metrics_path: '/metrics'
     static_configs:
       - targets: ['rabbit1:15692','rabbit2:15692','rabbit3:15692']
+
+  - job_name: 'patient-metrics'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['host.docker.internal:8091']

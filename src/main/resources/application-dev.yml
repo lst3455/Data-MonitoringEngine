@@ -14,10 +14,9 @@ app:
     # cross-origin, can set to '*' in development
     cross-origin: '*'
 
-# Spring 配置；rabbitmq
 spring:
   rabbitmq:
-    addresses: 127.0.0.1
+    host: 127.0.0.1
     port: 5673
     username: admin
     password: admin
@@ -31,12 +30,15 @@ spring:
           initial-interval: 5000ms #重试间隔时间（单位毫秒）
           max-interval: 1200ms #重试最大时间间隔（单位毫秒）
           multiplier: 2 #间隔时间乘子，间隔时间*乘子=下一次的间隔时间，最大不能超过设置的最大间隔时间
-    topic:
-      activity_sku_stock_zero: activity_sku_stock_zero
-      send_award: send_award
-      send_rebate: send_rebate
-      update_point_success: update_point_success
+    queue:
+      patient_metric_queue: patient_metric_queue
 
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
 
 # 日志
 logging:
