@@ -1,0 +1,5 @@
+spring:
+  config:
+    name: Data-monitoring-engine
+  profiles:
+    active: dev
