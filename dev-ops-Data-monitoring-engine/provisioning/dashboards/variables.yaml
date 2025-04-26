@@ -1,3 +1,4 @@
+# provisioning/dashboards/variables.yaml
 apiVersion: 1
 list:
   - name: patients
@@ -5,5 +6,12 @@ list:
     label: Patient
     dataSource: Prometheus
     query: label_values(patient_heart_rate_bpm, patient)
+    includeAll: true
+    allValue: '.*'
+  - name: devices
+    type: query
+    label: Device
+    dataSource: Prometheus
+    query: label_values(patient_heart_rate_bpm, device)
     includeAll: true
     allValue: '.*'

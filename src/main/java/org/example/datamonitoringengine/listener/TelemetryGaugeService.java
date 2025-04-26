@@ -39,10 +39,11 @@ public class TelemetryGaugeService {
     }
 
     public void recordAll(TelemetryEvent ev) {
-        String pid = ev.getPatientId();
+        String patientId = ev.getPatientId();
+        String deviceId = ev.getDeviceId();
         // Iterate each metrics entry
         for (MonitoringMetrics m : ev.getMetricsList()) {
-            String key = pid + ":" + m.getDeviceId();
+            String key = patientId + ":" + deviceId;
             if (m.getHeartRate() != null) {
                 latestHr.put(key, m.getHeartRate());
             }

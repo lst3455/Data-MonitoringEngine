@@ -31,7 +31,11 @@ spring:
           max-interval: 1200ms #重试最大时间间隔（单位毫秒）
           multiplier: 2 #间隔时间乘子，间隔时间*乘子=下一次的间隔时间，最大不能超过设置的最大间隔时间
     queue:
-      patient_metric_queue: patient_metric_queue
+      hr_queue: hr_queue,
+      bp_queue: bp_queue,
+      spo2_queue: spo2_queue,
+      rr_queue: rr_queue,
+      temp_queue: temp_queue,
 
 
 management:
