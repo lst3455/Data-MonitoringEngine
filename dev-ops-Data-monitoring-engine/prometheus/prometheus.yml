@@ -1,6 +1,9 @@
 global:
   scrape_interval: 5s     # How often to scrape all targets by default
 
+rule_files:
+  - 'recording_rules.yml'
+
 scrape_configs:
   - job_name: 'rabbitmq'
     metrics_path: '/metrics'

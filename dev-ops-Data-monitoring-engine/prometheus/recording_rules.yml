@@ -1,0 +1,17 @@
+groups:
+  - name: patient_metrics
+    # Evaluate every 30s (otherwise uses global evaluation_interval)
+    interval: 30s
+    rules:
+      - record: patient_heart_rate_avg_5m
+        expr: avg_over_time(patient_heart_rate_bpm[5m])
+      - record: patient_respiratory_rate_avg_5m
+        expr: avg_over_time(patient_respiratory_rate_bpm[5m])
+      - record: patient_temperature_avg_5m
+        expr: avg_over_time(patient_temperature_celsius[5m])
+      - record: patient_blood_pressure_systolic_avg_5m
+        expr: avg_over_time(patient_blood_pressure_systolic_mmHg[5m])
+      - record: patient_blood_pressure_diastolic_avg_5m
+        expr: avg_over_time(patient_blood_pressure_diastolic_mmHg[5m])
+      - record: patient_spo2_avg_5m
+        expr: avg_over_time(patient_spo2_percent[5m])
