@@ -23,7 +23,7 @@ This project simulates a full end-to-end healthcare monitoring pipeline, from de
     - Three-node RabbitMQ cluster (v3.11) using mutual TLS (mTLS) for encrypted, authenticated AMQP connections.
 
 - **Spring Boot Consumer & Micrometer**
-    - Dynamically registers MultiGauge metrics (`patient_heart_rate_bpm`, `patient_blood_pressure_*`, etc.) tagged by patient and device.
+    - Dynamically registers MultiGauge metrics (`patient_heart_rate_bpm`, `patient_blood_pressure_systolic_mmHg`, etc.) tagged by patient and device.
 
 - **Prometheus Scraping & Recording Rules**
     - `/actuator/prometheus` endpoint scraped over HTTPS; precomputes averages and sums via recording rules for ultra-fast queries.
