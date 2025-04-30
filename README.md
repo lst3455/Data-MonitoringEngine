@@ -24,8 +24,8 @@ This project simulates a full end-to-end healthcare monitoring pipeline, from de
         │ Patient Devices │          │    Node-RED         │     │ RabbitMQ Cluster  │
         │ (100 simulated  │──Telemetry──► Function Nodes    ──AMQPS─► 3-node, HA, TLS/  │
         │  patients)      │          │ (heart, BP, SpO₂,   │     │ mTLS secured      │
-        └─────────────────┘          │  resp, temp sims)   │     └───┬───────────────┘
-                                     └─────────────────────┘         │
+        └─────────────────┘          │  resp, temp sims)   │     └────┬───────────────┘
+                                     └─────────────────────┘          │
                                                                       │
                                                                       │
                                                      ┌────────────────▼────────────────┐
