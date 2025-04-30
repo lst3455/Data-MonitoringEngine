@@ -3,6 +3,55 @@
 ## Summary
 This project simulates a full end-to-end healthcare monitoring pipeline, from device telemetry generation through secure messaging, metric collection, and dashboard visualization. It uses realistic, statistically-driven Node-RED simulators, a RabbitMQ 3-node cluster secured with TLS/mTLS, a Spring Boot consumer instrumenting Micrometer MultiGauge metrics, Prometheus for scrape and recording rules, and Grafana for interactive dashboards. Everything is orchestrated via Docker Compose for easy local development and testing.
 
+## High-level architecture
+                                    +---------------------+
+                                    |  /dev-ops/certs     |
+                                    |  (CA & PKI artifacts)|
+                                    +----------┬----------+
+                                               │
+                                         mounts│
+                                               v
+                                    ┌─────────────────────┐
+                                    │   Docker Compose    │
+                                    │ (Single bridge network,
+                                    │  config & volume mounts)
+                                    └──────────┬──────────┘
+                                               │
+                  ┌────────────────────────────┼────────────────────────────┐
+                  │                            │                            │
+                  ▼                            ▼                            ▼
+        ┌─────────────────┐          ┌─────────────────────┐     ┌───────────────────┐
+        │ Patient Devices │          │    Node-RED         │     │ RabbitMQ Cluster  │
+        │ (100 simulated  │──Telemetry──► Function Nodes    ──AMQPS─► 3-node, HA, TLS/  │
+        │  patients)      │          │ (heart, BP, SpO₂,   │     │ mTLS secured      │
+        └─────────────────┘          │  resp, temp sims)   │     └───┬───────────────┘
+                                     └─────────────────────┘         │
+                                                                      │
+                                                                      │
+                                                     ┌────────────────▼────────────────┐
+                                                     │    Spring Boot Consumer         │
+                                                     │  • Spring AMQP                   │
+                                                     │  • Micrometer MultiGauge metrics │
+                                                     └────────────────┬─────────────────┘
+                                                                      │
+                                                                      │ HTTPS scrape
+                                                                      ▼
+                                                     ┌─────────────────────────────┐
+                                                     │        Prometheus           │
+                                                     │ • /actuator/prometheus      │
+                                                     │ • Recording rules (avg/sum) │
+                                                     └────────────────┬────────────┘
+                                                                      │
+                                                                      │ Datasource
+                                                                      ▼
+                                                      ┌─────────────────────────┐
+                                                      │        Grafana          │
+                                                      │ • YAML-provisioned       │
+                                                      │   dashboards & datasources │
+                                                      │ • Template vars & regex  │
+                                                      └─────────────────────────┘
+
+
 ### Node-red - device simulator
 ![](readme/node-red.png)
 ### Prometheus
