@@ -6,11 +6,11 @@ This project simulates a full end-to-end healthcare monitoring pipeline, from de
 ### Node-red
 ![](readme/node-red.png)
 ### Grafana
-![](D:\Java\Data-monitoring-engine\readme\pm.png)
+![](\readme\pm.png)
 ### node-red
-![](D:\Java\Data-monitoring-engine\readme\pm1.png)
+![](\readme\pm1.png)
 ### node-red
-![](D:\Java\Data-monitoring-engine\readme\pm2.png)
+![](\readme\pm2.png)
 
 ## Features
 
