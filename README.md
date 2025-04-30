@@ -5,6 +5,8 @@ This project simulates a full end-to-end healthcare monitoring pipeline, from de
 
 ### Node-red
 ![](readme/node-red.png)
+### Prometheus
+![](readme/pm0.png)
 ### Grafana
 ![](readme/pm.png)
 ### node-red
