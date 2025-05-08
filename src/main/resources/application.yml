@@ -2,4 +2,4 @@ spring:
   config:
     name: Data-monitoring-engine
   profiles:
-    active: dev
+    active: dev-k8s
