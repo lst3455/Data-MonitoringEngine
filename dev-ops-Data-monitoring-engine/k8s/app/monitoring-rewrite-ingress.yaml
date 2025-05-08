@@ -1,0 +1,31 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: monitoring-rewrite-ingress
+  namespace: monitoring
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: localhost
+      http:
+        paths:
+          # RabbitMQ UI: /rabbit/foo → /ui/foo
+          - path: /rabbit(?:/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: rabbitmq-cluster
+                port:
+                  number: 15672
+
+          # Node-RED: /nodered/foo → /foo
+          - path: /nodered(?:/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: nodered
+                port:
+                  number: 1880

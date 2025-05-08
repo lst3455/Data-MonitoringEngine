@@ -1,0 +1,28 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: rabbitmq-tls
+  namespace: monitoring
+spec:
+  secretName: rabbitmq-tls-secret
+  dnsNames:
+    - rabbit1.monitoring.svc.cluster.local
+    - rabbit2.monitoring.svc.cluster.local
+    - rabbit3.monitoring.svc.cluster.local
+  issuerRef:
+    name: ca-issuer
+    kind: ClusterIssuer
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nodered-tls
+  namespace: monitoring
+spec:
+  secretName: nodered-tls-secret
+  dnsNames:
+    - nodered.monitoring.svc.cluster.local
+  issuerRef:
+    name: ca-issuer
+    kind: ClusterIssuer
