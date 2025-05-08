@@ -4,15 +4,22 @@ metadata:
   name: monitoring-rewrite-ingress
   namespace: monitoring
   annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: ca-cluster-issuer
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   ingressClassName: nginx
+
+  tls:
+    - hosts:
+        - localhost
+      secretName: monitoring-rewrite-tls
+
   rules:
     - host: localhost
       http:
         paths:
-          # RabbitMQ UI: /rabbit/foo → /ui/foo
           - path: /rabbit(?:/|$)(.*)
             pathType: ImplementationSpecific
             backend:
@@ -21,7 +28,6 @@ spec:
                 port:
                   number: 15672
 
-          # Node-RED: /nodered/foo → /foo
           - path: /nodered(?:/|$)(.*)
             pathType: ImplementationSpecific
             backend:
