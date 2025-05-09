@@ -38,10 +38,18 @@ spring:
 
 
 management:
+#  managementmetrics:
+#    export:
+#      cloudwatch:
+#        enabled: true
+#        namespace: PatientMonitoring
+#        step: 10s
+#        batch-size: 20
   endpoints:
     web:
       exposure:
         include: prometheus
+
 
 # 日志
 logging:
