@@ -62,6 +62,9 @@ This project simulates a full end-to-end healthcare monitoring pipeline, from de
 ![](readme/pm1.png)
 ### Grafana - all patient
 ![](readme/pm2.png)
+### AWS - cloudWatch
+![](readme/aws.png)
+
 
 ## Features
 
