@@ -62,7 +62,6 @@ jobs:
         shell: pwsh
 
       # 4. Load image into Kubernetes cluster
-      #    (this example assumes kind or a local registry—you may need to adjust for your setup)
       - name: Tag & Push to Local Registry
         run: |
           docker tag local/datamonitoringengine:latest localhost:5000/datamonitoringengine:latest
