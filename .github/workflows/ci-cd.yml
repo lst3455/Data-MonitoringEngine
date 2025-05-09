@@ -1,0 +1,80 @@
+name: CI/CD (Self-Hosted Windows Runner)
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: [ self-hosted, Windows, X64 ]
+
+    steps:
+      # 1. Check out your code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Set up Java & Maven cache
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      # 3. Build & test
+      - name: Build with Maven
+        run: mvn -B verify
+        shell: cmd
+
+      # 4. Package the JAR
+      - name: Package JAR
+        run: mvn -B package -DskipTests
+        shell: cmd
+
+      # 5. Upload artifact for the deploy job
+      - name: Upload application JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-jar
+          path: target/*.jar
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: [ self-hosted, Windows, X64 ]
+
+    steps:
+      # 1. Check out your code again (for manifests/Dockerfile)
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Download the built JAR
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: app-jar
+
+      # 3. Build & tag a Docker image locally (requires Docker Desktop on your Windows runner)
+      - name: Build Docker image
+        run: |
+          docker build -t local/datamonitoringengine:latest .
+        shell: pwsh
+
+      # 4. Load/push that image into your Kubernetes cluster
+      #    (this example assumes kind or a local registry—you may need to adjust for your setup)
+      - name: Tag & Push to Local Registry
+        run: |
+          docker tag local/datamonitoringengine:latest localhost:5000/datamonitoringengine:latest
+          docker push localhost:5000/datamonitoringengine:latest
+        shell: pwsh
+
+      # 5. Deploy by updating the Deployment’s image
+      - name: kubectl set image
+        env:
+          KUBECONFIG: C:\Users\runner\.kube\config   # adjust to wherever your kubeconfig lives
+        run: |
+          kubectl set image deployment/data-monitoring-engine \
+            data-monitoring-engine=localhost:5000/datamonitoringengine:latest \
+            --namespace monitoring
+        shell: pwsh
