@@ -1,4 +1,4 @@
-# Healthcare Telemetry Monitoring System
+# Healthcare Telemetry Monitoring Engine
 
 ## Summary
 This project simulates a full end-to-end healthcare monitoring pipeline, from device telemetry generation through secure messaging, metric collection, and dashboard visualization. It uses realistic, statistically-driven Node-RED simulators, a RabbitMQ 3-node cluster secured with TLS/mTLS, a Spring Boot consumer instrumenting Micrometer MultiGauge metrics, Prometheus for scrape and recording rules, and Grafana for interactive dashboards. Everything is orchestrated via Docker Compose for easy local development and testing.
